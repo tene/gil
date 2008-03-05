@@ -22,8 +22,12 @@ token ws {
 }
 
 rule statement {
-    'say' <value> [ ',' <value> ]* ';'
+    <funcall> ';'
     {*}
+}
+
+rule funcall {
+    $<fname>=<ident>'(' <value> [',' <value>]* ')' {*}
 }
 
 token value {

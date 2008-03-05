@@ -26,7 +26,11 @@ method TOP($/) {
 
 
 method statement($/) {
-    my $past := PAST::Op.new( :name('say'), :pasttype('call'), :node( $/ ) );
+    make $( $<funcall> );
+}
+
+method funcall($/) {
+    my $past := PAST::Op.new( :name(~$<fname>), :pasttype('call'), :node( $/ ) );
     for $<value> {
         $past.push( $( $_ ) );
     }
