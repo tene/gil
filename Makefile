@@ -42,6 +42,7 @@ SOURCES = gil.pir \
 
 BUILTINS_PIR = \
   src/builtins/say.pir \
+  src/builtins/math.pir \
 
 # PMCS = gil
 # PMC_SOURCES = $(PMC_DIR)/gil.pmc

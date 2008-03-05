@@ -1,2 +1,5 @@
-Run tools/dev/reconfigure.pl in Parrot's root to regenerate the Makefile after
-edits to config/makefiles/root.in
+Run:
+
+perl tools/dev/reconfigure.pl --step=gen::languages --languages=gil
+
+in Parrot's root to regenerate the Makefile after edits to config/makefiles/root.in
