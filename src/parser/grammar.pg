@@ -22,13 +22,20 @@ token ws {
 }
 
 token statement {
+    [
+    | <assignment>   {*}                   #= assignment
     | <expr>  {*}                          #= expr
+    ]
     ';'
-    
+}
+
+rule assignment {
+    <variable> '=' <expr> {*}
 }
 
 token expr {
     | <funcall>  {*}                      #= funcall
+    | <variable> {*}                      #= variable
     | <value>    {*}                      #= value
 }
 
@@ -39,6 +46,11 @@ rule funcall {
 token value {
     | <integer> {*}                              #= integer
     | <quote> {*}                                #= quote
+}
+
+rule variable {
+    | 'my' $<name>=<ident> {*}         #= declaration
+    | $<name>=<ident> {*}              #= not_declaration
 }
 
 token integer { \d+ {*} }

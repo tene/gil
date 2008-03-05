@@ -29,6 +29,14 @@ method statement($/, $key) {
     make $( $/{$key} );
 }
 
+method assignment($/) {
+    my $var := $($<variable>);
+    my $past := PAST::Op.new( :pasttype('bind'), :node( $/ ) );
+    $past.push($var);
+    $past.push( $( $<expr> ) );
+    make $past;
+}
+
 method expr($/, $key) {
     make $( $/{$key} );
 }
@@ -44,6 +52,15 @@ method funcall($/) {
 
 method value($/, $key) {
     make $( $/{$key} );
+}
+
+
+method variable($/,$key) {
+    my $var := PAST::Var.new( :name($<name>), :scope('lexical'), :viviself('Undef'));
+    if $key eq 'declaration' {
+        $var.isdecl(1);
+    }
+    make $var;
 }
 
 
