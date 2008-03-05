@@ -21,13 +21,19 @@ token ws {
     [ '#' \N* \n? | \s+ ]*
 }
 
-rule statement {
-    <funcall> ';'
-    {*}
+token statement {
+    | <expr>  {*}                          #= expr
+    ';'
+    
+}
+
+token expr {
+    | <funcall>  {*}                      #= funcall
+    | <value>    {*}                      #= value
 }
 
 rule funcall {
-    $<fname>=<ident>'(' <value> [',' <value>]* ')' {*}
+    $<fname>=<ident>'(' <expr> [',' <expr>]* ')' {*}
 }
 
 token value {

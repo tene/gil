@@ -25,13 +25,17 @@ method TOP($/) {
 }
 
 
-method statement($/) {
-    make $( $<funcall> );
+method statement($/, $key) {
+    make $( $/{$key} );
+}
+
+method expr($/, $key) {
+    make $( $/{$key} );
 }
 
 method funcall($/) {
     my $past := PAST::Op.new( :name(~$<fname>), :pasttype('call'), :node( $/ ) );
-    for $<value> {
+    for $<expr> {
         $past.push( $( $_ ) );
     }
     make $past;
