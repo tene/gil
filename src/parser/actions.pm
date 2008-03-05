@@ -29,21 +29,13 @@ method statement($/, $key) {
     make $( $/{$key} );
 }
 
-method assignment($/) {
-    my $var := $($<variable>);
-    my $past := PAST::Op.new( :pasttype('bind'), :node( $/ ) );
-    $past.push($var);
-    $past.push( $( $<expr> ) );
-    make $past;
-}
-
-method expr($/, $key) {
+method term($/, $key) {
     make $( $/{$key} );
 }
 
 method funcall($/) {
     my $past := PAST::Op.new( :name(~$<fname>), :pasttype('call'), :node( $/ ) );
-    for $<expr> {
+    for $<EXPR> {
         $past.push( $( $_ ) );
     }
     make $past;
@@ -71,6 +63,25 @@ method integer($/) {
 
 method quote($/) {
     make PAST::Val.new( :value( $($<string_literal>) ), :node($/) );
+}
+
+
+method EXPR($/, $key) {
+    if ($key eq 'end') {
+        make $($<expr>);
+    }
+    else {
+        my $past := PAST::Op.new( :name($<type>),
+                                  :pasttype($<top><pasttype>),
+                                  :pirop($<top><pirop>),
+                                  :lvalue($<top><lvalue>),
+                                  :node($/)
+                                );
+        for @($/) {
+            $past.push( $($_) );
+        }
+        make $past;
+    }
 }
 
 
