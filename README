@@ -1,0 +1,2 @@
+Run tools/dev/reconfigure.pl in Parrot's root to regenerate the Makefile after
+edits to config/makefiles/root.in
