@@ -11,28 +11,28 @@ math.pir -- simple math functions
 .sub 'sum'
     .param pmc a
     .param pmc b
-    $P0 = n_add a, b
+    $P0 = add a, b
     .return ($P0)
 .end
 
 .sub 'sub'
     .param pmc a
     .param pmc b
-    $P0 = n_sub a, b
+    $P0 = sub a, b
     .return ($P0)
 .end
 
 .sub 'mul'
     .param pmc a
     .param pmc b
-    $P0 = n_mul a, b
+    $P0 = mul a, b
     .return ($P0)
 .end
 
 .sub 'div'
     .param pmc a
     .param pmc b
-    $P0 = n_div a, b
+    $P0 = div a, b
     .return ($P0)
 .end
 

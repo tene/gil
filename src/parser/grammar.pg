@@ -60,8 +60,8 @@ token quote {
 rule EXPR is optable { ... }
 
 proto 'infix:=' is precedence(1) is pasttype('bind') is lvalue(1) { ... }
-proto 'infix:+' is looser('infix:=') is pirop('n_add') { ... }
-proto 'infix:-' is equiv('infix:+') is pirop('n_sub') { ... }
-proto 'infix:*' is looser('infix:+') is pirop('n_mul') { ... }
-proto 'infix:/' is looser('infix:+') is pirop('n_div') { ... }
+proto 'infix:+' is looser('infix:=') is pirop('add') { ... }
+proto 'infix:-' is equiv('infix:+') is pirop('sub') { ... }
+proto 'infix:*' is looser('infix:+') is pirop('mul') { ... }
+proto 'infix:/' is looser('infix:+') is pirop('div') { ... }
 proto 'term:' is tighter('infix:=') is parsed(&term) { ... }
