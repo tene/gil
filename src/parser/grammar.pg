@@ -52,7 +52,7 @@ rule variable {
 token integer { \d+ {*} }
 
 token quote {
-    [ \' <string_literal: '> \' | \" <string_literal: "> \" ]
+    [ \' <string_literal: "'"> \' | \" <string_literal: '"'> \" ]
     {*}
 }
 
