@@ -6,7 +6,7 @@ math.pir -- simple math functions
 
 =cut
 
-.namespace
+.namespace []
 
 .sub 'sum'
     .param pmc a
