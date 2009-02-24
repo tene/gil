@@ -1,39 +1,65 @@
 ## $Id$
 
 ## arguments we want to run parrot with
-PARROT_ARGS   =
+PARROT_ARGS   :=
 
 ## configuration settings
-BUILD_DIR     = @build_dir@
+VERSION       := @versiondir@
+BIN_DIR       := @bin_dir@
+LIB_DIR       := @lib_dir@$(VERSION)
+DOC_DIR       := @doc_dir@$(VERSION)
+MANDIR        := @mandir@$(VERSION)
+
+# Set up extensions
+LOAD_EXT      := @load_ext@
+O             := @o@
+
+# Various paths
+PERL6GRAMMAR  := $(LIB_DIR)/library/PGE/Perl6Grammar.pbc
+NQP           := $(LIB_DIR)/languages/nqp/nqp.pbc
+PCT           := $(LIB_DIR)/library/PCT.pbc
+PMC_DIR       := src/pmc
+OPS_DIR       := src/ops
 
 ## Setup some commands
-PERL          = @perl@
-RM_F          = @rm_f@
-CP            = @cp@
-PARROT        = ../../parrot@exe@
-CAT           = $(PERL) -MExtUtils::Command -e cat
+MAKE          := @make_c@
+PERL          := @perl@
+CAT           := @cat@
+CHMOD         := @chmod@
+CP            := @cp@
+MKPATH        := @mkpath@
+RM_F          := @rm_f@
+RM_RF         := @rm_rf@
+POD2MAN       := pod2man
+#IF(parrot_is_shared and not(cygwin or win32)):export LD_RUN_PATH := @blib_dir@:$(LD_RUN_PATH)
+PARROT        := ../../parrot@exe@
+PBC_TO_EXE    := ../../pbc_to_exe@exe@
+#IF(darwin):
+#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
 
-## places to look for things
-PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
-PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
-NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
-PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
-
-all: gil.pbc
-
-SOURCES = \
+SOURCES := \
   src/gen_grammar.pir \
   src/gen_actions.pir \
   src/gen_builtins.pir \
   gil.pir
 
-BUILTINS_PIR = \
+BUILTINS_PIR := \
   src/builtins/say.pir \
   src/builtins/math.pir
 
+DOCS := README
+
 # the default target
-gil.pbc: $(PARROT) $(SOURCES)
+build: gil.pbc
+
+all: build gil@exe@ installable
+
+gil.pbc: $(SOURCES)
 	$(PARROT) $(PARROT_ARGS) -o gil.pbc gil.pir
+
+gil@exe@: gil.pbc
+	$(PBC_TO_EXE) gil.pbc
 
 src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
 	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
@@ -47,6 +73,11 @@ src/gen_actions.pir: $(NQP) $(PCT) src/parser/actions.pm
 src/gen_builtins.pir: $(BUILTINS_PIR)
 	$(CAT) $(BUILTINS_PIR) > src/gen_builtins.pir
 
+installable: installable_gil@exe@
+
+installable_gil@exe@: gil.pbc
+	$(PBC_TO_EXE) gil.pbc --install
+
 # regenerate the Makefile
 Makefile: config/makefiles/root.in
 	$(PERL) Configure.pl
@@ -56,8 +87,12 @@ help:
 	@echo ""
 	@echo "Following targets are available for the user:"
 	@echo ""
-	@echo "  all:               gil.pbc"
+	@echo "  build:             gil.pbc"
 	@echo "                     This is the default."
+	@echo "  all:               gil.pbc gil@exe@ installable Makefile"
+	@echo "  installable:       Create libs and self-hosting binaries to be installed."
+	@echo "  install:           Install the installable targets and docs."
+	@echo ""
 	@echo "Testing:"
 	@echo "  test:              Run the test suite."
 	@echo "  testclean:         Clean up test results."
@@ -71,22 +106,55 @@ help:
 	@echo "  help:              Print this help message."
 	@echo ""
 
-test: all
+test: build
 	$(PERL) t/harness
 
-# this target has nothing to do
+install: installable
+	$(CP) installable_gil@exe@ $(BIN_DIR)/parrot-gil@exe@
+	$(CHMOD) 0755 $(BIN_DIR)/parrot-gil@exe@
+	-$(MKPATH) $(LIB_DIR)/languages/gil
+	$(CP) gil.pbc $(LIB_DIR)/languages/gil/gil.pbc
+#	-$(MKPATH) $(MANDIR)/man1
+#	$(POD2MAN) doc/running.pod > $(MANDIR)/man1/parrot-gil.1
+#	-$(MKPATH) $(DOC_DIR)/languages/gil
+#	$(CP) $(DOCS) $(DOC_DIR)/languages/gil
+
+uninstall:
+	$(RM_F) $(BIN_DIR)/parrot-gil@exe@
+	$(RM_RF) $(LIB_DIR)/languages/gil
+#	$(RM_F) $(MANDIR)/man1/parrot-gil.1
+#	$(RM_RF) $(DOC_DIR)/languages/gil
+
+win32-inno-installer: installable
+#	-$(MKPATH) man/man1
+#	$(POD2MAN) doc/running.pod > man/man1/parrot-gil.1
+#	-$(MKPATH) man/html
+#	pod2html --infile doc/running.pod --outfile man/html/parrot-gil.html
+	$(CP) installable_gil@exe@ parrot-gil.exe
+	cd @build_dir@ && $(PERL) tools/dev/mk_inno_language.pl gil
+	cd @build_dir@ && iscc parrot-gil.iss
+
 testclean:
 
 CLEANUPS = \
+  gil.pbc \
   "src/gen_*.pir" \
-  gil.pbc
+  "*.c" \
+  "*$(O)" \
+  gil@exe@ \
+#IF(win32):  parrot-gil.exe \
+  installable_gil@exe@
 
-clean:
+clean: testclean
 	$(RM_F) $(CLEANUPS)
 
-realclean: clean
-	$(RM_F) Makefile
+realclean: testclean
+	$(RM_F) $(CLEANUPS) Makefile
 
 distclean: realclean
 
+# Local variables:
+#   mode: makefile
+# End:
+# vim: ft=make:
 
