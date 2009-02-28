@@ -1,3 +1,12 @@
 Makefile
+
 *.pbc
+*.c
+*.o
+*.obj
+*.exe
+*.iss
+gil
+installable_gil
+
 src/gen_*.pir

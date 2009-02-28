@@ -131,18 +131,20 @@ win32-inno-installer: installable
 #	-$(MKPATH) man/html
 #	pod2html --infile doc/running.pod --outfile man/html/parrot-gil.html
 	$(CP) installable_gil@exe@ parrot-gil.exe
-	cd @build_dir@ && $(PERL) tools/dev/mk_inno_language.pl gil
-	cd @build_dir@ && iscc parrot-gil.iss
+	$(PERL) @build_dir@/tools/dev/mk_inno_language.pl gil
+	iscc parrot-gil.iss
 
 testclean:
 
-CLEANUPS = \
+CLEANUPS := \
   gil.pbc \
   "src/gen_*.pir" \
   "*.c" \
   "*$(O)" \
   gil@exe@ \
 #IF(win32):  parrot-gil.exe \
+#IF(win32):  parrot-gil.iss \
+#IF(win32):  "setup-parrot-*.exe" \
   installable_gil@exe@
 
 clean: testclean
