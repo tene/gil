@@ -1,4 +1,3 @@
-Makefile
 
 *.pbc
 *.c
@@ -6,7 +5,9 @@ Makefile
 *.obj
 *.exe
 *.iss
-gil
 installable_gil
 
-src/gen_*.pir
+gil/gen_*.pir
+
+*.patch
+*.tar.gz
