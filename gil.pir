@@ -50,7 +50,7 @@ to the gil compiler.
 .end
 
 
-.include 'src/gen_builtins.pir'
+.include 'src/builtins.pir'
 .include 'src/gen_grammar.pir'
 .include 'src/gen_actions.pir'
 

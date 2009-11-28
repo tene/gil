@@ -1,7 +1,5 @@
 Run:
 
- $ cd languages
- $ cd gil
- $ perl Configure.pl
- $ make
+ $ parrot setup.pir
+ $ parrot setup.pir test
 
