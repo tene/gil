@@ -35,24 +35,25 @@ No Configure step, no Makefile generated.
 
     # build
     $P1 = new 'Hash'
-    $P1['src/gen_grammar.pir'] = 'src/parser/grammar.pg'
+    $P1['gil/gen_grammar.pir'] = 'gil/parser/grammar.pg'
     $P0['pir_pge'] = $P1
 
     $P2 = new 'Hash'
-    $P2['src/gen_actions.pir'] = 'src/parser/actions.pm'
+    $P2['gil/gen_actions.pir'] = 'gil/parser/actions.pm'
     $P0['pir_nqp'] = $P2
 
     $P3 = new 'Hash'
     $P4 = split "\n", <<'SOURCES'
-gil.pir
-src/gen_grammar.pir
-src/gen_actions.pir
-src/builtins.pir
-src/builtins/math.pir
-src/builtins/say.pir
+gil/gil.pir
+gil/gen_grammar.pir
+gil/gen_actions.pir
+gil/builtins.pir
+gil/builtins/math.pir
+gil/builtins/say.pir
 SOURCES
     $S0 = pop $P4
-    $P3['gil.pbc'] = $P4
+    $P3['gil/gil.pbc'] = $P4
+    $P3['gil.pbc'] = 'gil.pir'
     $P0['pbc_pir'] = $P3
 
     $P5 = new 'Hash'
@@ -64,6 +65,9 @@ SOURCES
     $S0 .= ' gil.pbc'
     $P0['prove_exec'] = $S0
 
+    # install
+    $P0['inst_lang'] = 'gil/gil.pbc'
+
     .tailcall setup(args :flat, $P0 :flat :named)
 .end
 
@@ -73,3 +77,4 @@ SOURCES
 #   fill-column: 100
 # End:
 # vim: expandtab shiftwidth=4 ft=pir:
+
