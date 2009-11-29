@@ -1,4 +1,4 @@
-#! /usr/local/bin/parrot
+#!/usr/bin/env parrot
 
 =head1 NAME
 
