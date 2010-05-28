@@ -19,31 +19,31 @@ class gil::Grammar::Actions;
 method TOP($/) {
     my $past := PAST::Block.new( :blocktype('declaration'), :node( $/ ) );
     for $<statement> {
-        $past.push( $( $_ ) );
+        $past.push( $_.ast );
     }
     make $past;
 }
 
 
 method statement($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast;
 }
 
 method term($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast;
 }
 
 method funcall($/) {
     my $past := PAST::Op.new( :name(~$<fname>), :pasttype('call'), :node( $/ ) );
     for $<EXPR> {
-        $past.push( $( $_ ) );
+        $past.push( $_.ast );
     }
     make $past;
 }
 
 
 method value($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast;
 }
 
 
@@ -62,13 +62,13 @@ method integer($/) {
 
 
 method quote($/) {
-    make PAST::Val.new( :value( $($<string_literal>) ), :node($/) );
+    make PAST::Val.new( :value( $<string_literal>.ast ), :node($/) );
 }
 
 
 method EXPR($/, $key) {
     if ($key eq 'end') {
-        make $($<expr>);
+        make $<expr>.ast;
     }
     else {
         my $past := PAST::Op.new( :name($<type>),
@@ -78,7 +78,7 @@ method EXPR($/, $key) {
                                   :node($/)
                                 );
         for @($/) {
-            $past.push( $($_) );
+            $past.push( $_.ast );
         }
         make $past;
     }
